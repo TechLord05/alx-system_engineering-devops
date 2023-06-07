@@ -8,4 +8,6 @@
 
 ----A script that displays current directory contents, including hidden files (starting with .)
 
------
+----A script that displays current directory contents in long format with user and group IDs displayed numerically.
+
+----A script that 
