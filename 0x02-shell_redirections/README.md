@@ -1,1 +1,1 @@
-This is a script for shell redirections
+Shell I/O redirections and filter
