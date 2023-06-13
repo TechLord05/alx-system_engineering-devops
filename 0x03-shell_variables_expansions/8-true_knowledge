@@ -1,2 +1,3 @@
 #!/bin/bash
-cat -e $(("$TRUEKNOWLEDGE" + 128))'\n'
+echo $((128 + $TRUEKNOWLEDGE))
+
