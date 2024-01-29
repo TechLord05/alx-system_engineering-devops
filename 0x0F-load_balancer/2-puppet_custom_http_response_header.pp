@@ -1,29 +1,29 @@
-# Use Puppet to automate the task of creating a custom HTTP header response
-
-# Update package information
-exec { 'apt-update':
-  command => '/usr/bin/apt-get update',
+# creating a custum HTTP header response with Puppet
+#
+exec { 'update system':
+        command => '/usr/bin/apt-get update',
 }
 
-# Install Nginx
 package { 'nginx':
-  ensure => 'installed',
+	ensure => 'installed',
+	require => Exec['update system']
 }
 
-# Configure Nginx with custom HTTP header
-file { '/etc/nginx/sites-available/default':
-  ensure => present,
-  content => "server {\n\tlisten 80 default_server;\n\tlisten [::]:80 default_server;\n\n\tserver_name _;\n\n\tlocation / {\n\t\tadd_header X-Served-By $hostname;\n\t\t# Your other configurations here\n\t}\n}",
+file {'/var/www/html/index.html':
+	content => 'Hello World!'
 }
 
-file { '/etc/nginx/sites-enabled/default':
-  ensure => link,
-  target => '/etc/nginx/sites-available/default',
+exec {'redirect_me':
+	command => "sudo sed -i '53i\\n\tlocation \/redirect_me {\n\t\treturn 301 https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4;\n\t}' /etc/nginx/sites-available/default",
+	provider => 'shell'
 }
 
-# Enable and restart Nginx
-service { 'nginx':
-  ensure    => 'running',
-  enable    => true,
-  subscribe => [File['/etc/nginx/sites-available/default'], Package['nginx']],
+exec {'HTTP header':
+	command => 'sed -i "24i\	add_header X-Served-By \$hostname;" /etc/nginx/sites-available/default',
+	provider => 'shell'
+}
+
+service {'nginx':
+	ensure => running,
+	require => Package['nginx']
 }
