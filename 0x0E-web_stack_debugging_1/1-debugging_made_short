@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sudo apt-get update -y
-sudo apt-get install -y nginx
-sudo sed -i 's/listen [::]:80 default_server;/listen 0.0.0.0:80 default_server;/g' /etc/nginx/sites-available/default
-sudo service nginx restart
+# This script fixes a nginx server listening on the wrong port
+cp /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+service nginx restart
+kill "$(cat /run/nginx.pid)"
