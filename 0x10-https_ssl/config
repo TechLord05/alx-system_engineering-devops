@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#Install and configure HAproxy on your lb-01 server.
+
+#create haproxy config file
+balancer="\
+frontend http_front
+    bind *:80
+    mode http
+    default_backend http_back
+    
+backend http_back
+    balance roundrobin
+    server 416778-web-01 100.25.0.104:80 check
+    server 416778-web-02 35.153.67.102:80 check
+"
