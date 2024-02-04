@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
-# install and configure HAproxy load balancer
+#Install and configure HAproxy on your lb-01 server.
 
-sudo apt-get update
-sudo apt-get install --no-install-recommends software-properties-common
-sudo add-apt-repository ppa:vbernat/haproxy-2.8
-sudo apt-get install haproxy -y
-
-sudo echo "ENABLED=1" >> /etc/default/haproxy
-
-sudo echo "
+#create haproxy config file
+balancer="\
 frontend http_front
     bind *:80
     mode http
-    default_backend http_server
-
-backend http_server
+    default_backend http_back
+    
+backend http_back
     balance roundrobin
-	server 416778-web-01 100.25.0.104:80 check
-	server 416778-web-02 35.153.67.102:80 check
-" >> /etc/haproxy/haproxy.cfg
+    server 416778-web-01 100.25.0.104:80 check
+    server 416778-web-02 35.153.67.102:80 check
+"
 
-service haproxy start
+# Update packages
+apt-get -y update
+apt-get -y upgrade
+
+# Add HAProxy PPA
+apt-get -y install software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-2.5
+apt-get -y update
+
+# Install HAProxy
+apt-get -y install haproxy
+cp -a /etc/haproxy/haproxy.cfg{,.orig}
+echo "$balancer" >> /etc/haproxy/haproxy.cfg
+service haproxy restart
