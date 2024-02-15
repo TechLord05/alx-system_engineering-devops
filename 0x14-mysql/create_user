@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+sudo mysql -u root -p <<EOF
+CREATE USER IF NOT EXISTS 'holberton_user'@'localhost' IDENTIFIED BY 'projectcorrection280hbtn';
+GRANT REPLICATION CLIENT, SELECT, UPDATE, CREATE, RELOAD, INSERT ON *.* TO 'holberton_user'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EOF
