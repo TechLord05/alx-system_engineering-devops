@@ -1,23 +1,28 @@
 #!/usr/bin/python3
-"""Using what you did in the task #0, extend your Python script to export
-data in the CSV format."""
+"""Python sripts that returns information about his/her TODO list progress"""
 
-import csv
-import json
+
+import requests
 import sys
-import urllib.request
-
 if __name__ == "__main__":
-    url = "https://jsonplaceholder.typicode.com/users/"
-    with urllib.request.urlopen(url + sys.argv[1]) as response:
-        data = json.loads(response.read().decode("utf-8"))
-        username = data.get('username')
-    url = "https://jsonplaceholder.typicode.com/todos?userId="
-    with urllib.request.urlopen(url + sys.argv[1]) as response:
-        data = json.loads(response.read().decode("utf-8"))
-        with open(sys.argv[1] + ".csv", mode='w', newline="") as file:
-            writer = csv.writer(file, delimiter=',', quoting=csv.QUOTE_ALL)
-            [writer.writerow(
-                [sys.argv[1], username, task.get('completed'),
-                 task.get('title')]
-            ) for task in data]
+    """returns information about his/her TODO list progress"""
+    if len(sys.argv) != 2:
+        print('Usage: sys.argv[0] <employee_id>')
+        sys.exit(1)
+
+    employee_id = sys.argv[1]
+
+    url = 'https://jsonplaceholder.typicode.com'
+    user_data = requests.get(url + 'users/{}'.format(employee_id)).json()
+    todos_data = requests.get(url + '/users/{}/todos'.format(
+        employee_id)).json()
+
+    completed_tasks = [task for task in todos_data if task.get(
+        'completed') is True]
+    total_tasks = len(todos_data)
+
+    print('Employee {} is done with tasks({}/{}):'.format(
+        user_data.get('name'), len(completed_tasks), total_tasks)
+        )
+    for task in completed_tasks:
+        print('\t {}'.format(task.get('title')))
